@@ -145,14 +145,12 @@ if __name__ == '__main__':
         main_lnk_path = cp.get(section, 'main_lnk_path')
         sync_files = cp.get(section, 'sync_files').split(',')
         ignore_files = cp.get(section, 'ignore_files').split(',')
-        print(sync_files)
-        print(ignore_files)
 
         # 调用
         update_code = UpdateCode(remote_url, local_save_path, project_path, main_lnk_path, sync_files, ignore_files)
         if update_code.check_remote_tag():
             update_code.download_code()
             update_code.copy_file()
-            # update_code.close_process()
-            # update_code.start_process()
+            update_code.close_process()
+            update_code.start_process()
 
