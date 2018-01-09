@@ -153,12 +153,11 @@ def main():
 
         # # 调用
         update_code = UpdateCode(remote_url, local_save_path, project_path, main_lnk_paths, sync_files, ignore_files)
-        # if update_code.check_remote_tag():
-        #     update_code.download_code()
-        #     update_code.copy_file()
-        #     update_code.close_process()
-        #     update_code.start_process()
-        update_code.close_process()
+        if update_code.check_remote_tag():
+            update_code.download_code()
+            update_code.copy_file()
+            update_code.close_process()
+            update_code.start_process()
 
 if __name__ == '__main__':
     while True:
