@@ -9,8 +9,12 @@ import zipfile
 import shutil
 import requests
 import json
+import ssl
+import time
 
-TIME_OUT = 30
+ssl._create_default_https_context = ssl._create_unverified_context
+
+TIME_OUT = 300
 
 def get_html_by_requests(url, headers = '', code = 'utf-8', data = None, proxies = {}):
     html = ''
@@ -199,7 +203,15 @@ def get_info(html, regexs, allow_repeat = False, fetch_one = False, split = None
         return infos
 
 def exec_command(command):
-    os.system(command)
+    '''
+    @summary:
+    ---------
+    @param command: 0 / 1
+    ---------
+    @result:
+    '''
+
+    return os.system(command)
 
 def copy_file(src_path, dst_path):
     try:
@@ -245,3 +257,6 @@ def dumps_json(json_):
         json_ = pformat(json_)
 
     return json_
+
+def delay_time(sleep_times):
+    time.sleep(sleep_times)

@@ -16,14 +16,14 @@ import codecs
 VERSION_FILE = '.version'
 
 class UpdateCode():
-    def __init__(self, remote_url, local_save_path, project_path, main_lnk_path, sync_files = [], ignore_files = []):
+    def __init__(self, remote_url, local_save_path, project_path, main_lnk_paths, sync_files = [], ignore_files = []):
         '''
         @summary: 更新代码初始化函数
         ---------
         @param remote_url: 远程代码发布地址
         @param local_save_path: 代码下载路径
         @param project_path: 本地项目路径
-        @param main_lnk_path: 本地项目执行文件快捷方式地址
+        @param main_lnk_paths: 本地项目执行文件快捷方式地址
         @param sync_files: 同步的文件 .* 表示同步全部
         @param ignore_files: 忽略的文件
         ---------
@@ -33,7 +33,7 @@ class UpdateCode():
         self._remote_url = remote_url
         self._local_save_path = local_save_path
         self._project_path = project_path
-        self._main_lnk_path = main_lnk_path
+        self._main_lnk_paths = main_lnk_paths
         self._sync_files = sync_files
         self._ignore_files = ignore_files
 
@@ -121,13 +121,16 @@ class UpdateCode():
         pid_file = tools.join_path(self._project_path, 'pid.txt')
         pid = tools.read_file(pid_file)
         command = 'taskkill /F /PID %s'%pid
-        log.debug(command)
+        log.info(command)
         tools.exec_command(command)
 
     def start_process(self):
-        tools.exec_command(self._main_lnk_path)
+        for main_lnk_path in self._main_lnk_paths:
+            command = 'start %s'%main_lnk_path
+            log.info(command)
+            tools.exec_command(command)
 
-if __name__ == '__main__':
+def main():
     # 用记事本打开文件后，会在conf文本头前面加上\ufeff，需要处理掉
     content = tools.read_file('config.conf')
     tools.write_file('config.conf', content.replace('\ufeff', ''))
@@ -142,15 +145,19 @@ if __name__ == '__main__':
         remote_url = cp.get(section, 'remote_url')
         local_save_path = cp.get(section, 'local_save_path')
         project_path = cp.get(section, 'project_path')
-        main_lnk_path = cp.get(section, 'main_lnk_path')
+        main_lnk_paths = cp.get(section, 'main_lnk_paths').split(',')
         sync_files = cp.get(section, 'sync_files').split(',')
         ignore_files = cp.get(section, 'ignore_files').split(',')
 
-        # 调用
-        update_code = UpdateCode(remote_url, local_save_path, project_path, main_lnk_path, sync_files, ignore_files)
+        # # 调用
+        update_code = UpdateCode(remote_url, local_save_path, project_path, main_lnk_paths, sync_files, ignore_files)
         if update_code.check_remote_tag():
             update_code.download_code()
             update_code.copy_file()
             update_code.close_process()
             update_code.start_process()
 
+if __name__ == '__main__':
+    while True:
+        main()
+        tools.delay_time(60 * 60)

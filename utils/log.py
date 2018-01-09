@@ -79,7 +79,7 @@ def get_logger(name = 'log.log', path = ''):
 
     return logger
 
-# logging.disable(logging.DEBUG) # 关闭所有log
+logging.disable(logging.DEBUG) # 关闭所有log
 
 # 不让打印log的配置
 STOP_LOGS = [
