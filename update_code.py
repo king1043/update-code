@@ -118,11 +118,13 @@ class UpdateCode():
 
 
     def close_process(self):
-        pid_file = tools.join_path(self._project_path, 'pid.txt')
-        pid = tools.read_file(pid_file)
-        command = 'taskkill /F /PID %s'%pid
-        log.info(command)
-        tools.exec_command(command)
+        files = tools.walk_file(self._project_path)
+        for file_name in files:
+            if 'pid' in file_name and file_name.endswith('.txt'):
+                pid = tools.read_file(file_name)
+                command = 'taskkill /F /PID %s'%pid
+                log.info('%s : %s'%(file_name, command))
+                tools.exec_command(command)
 
     def start_process(self):
         for main_lnk_path in self._main_lnk_paths:
@@ -151,11 +153,12 @@ def main():
 
         # # 调用
         update_code = UpdateCode(remote_url, local_save_path, project_path, main_lnk_paths, sync_files, ignore_files)
-        if update_code.check_remote_tag():
-            update_code.download_code()
-            update_code.copy_file()
-            update_code.close_process()
-            update_code.start_process()
+        # if update_code.check_remote_tag():
+        #     update_code.download_code()
+        #     update_code.copy_file()
+        #     update_code.close_process()
+        #     update_code.start_process()
+        update_code.close_process()
 
 if __name__ == '__main__':
     while True:
